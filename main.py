@@ -12,6 +12,7 @@ import asyncio
 import os
 import jwt
 from game.GameRoom import GameRoom
+from fastapi.responses import HTMLResponse
 
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
@@ -102,12 +103,11 @@ async def websocket_endpoint(websocket: WebSocket, token: str = Query(...)):
             rooms_websockets[room_id] = []
         rooms_websockets[room_id].append(websocket)
         
+        await actualise_number_players(room_id)
         # Mantener conexión viva
         while True:
             data = await websocket.receive_text()
             print(f"[{username} @ {room_id}] sent: {data}")
-            
-            await actualise_number_players(room_id)
 
     except jwt.ExpiredSignatureError:
         await websocket.close(code=4001)
@@ -118,14 +118,14 @@ async def websocket_endpoint(websocket: WebSocket, token: str = Query(...)):
     finally:
         try:
             rooms_websockets[room_id].remove(websocket)
-            
+            await actualise_number_players(room_id)
             # SI no queda nadie, quitar el roomID 
             print(f"{username} disconnected from room {room_id}")
         except:
             pass
         
         
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="/"), name="static")
 
 @app.get("/")
 def get_index():
@@ -134,6 +134,8 @@ def get_index():
         return FileResponse("templates/login.html")
     return {"mensaje": "login.html no encontrado"}
 
-@app.get("/room.html")
-async def room():
-    return FileResponse("templates/room.html")
+@app.get("/room/{room_id}", response_class=HTMLResponse)
+def serve_room_page(room_id: str):
+    with open("templates/room.html", "r") as f:
+        html_content = f.read()
+    return HTMLResponse(content=html_content)

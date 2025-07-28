@@ -167,7 +167,7 @@
         const room_id = data.room_id;
 
         // Redirige a la vista room.html con datos en URL
-        window.location.href = `/room.html?token=${encodeURIComponent(token)}&room_id=${encodeURIComponent(room_id)}`;
+        window.location.href = `/room/${encodeURIComponent(room_id)}?token=${encodeURIComponent(token)}`;
       } catch (error) {
         alert("Failed to create room: " + error.message);
       }
@@ -204,9 +204,10 @@
 
         const data = await response.json();
         const token = data.token;
-        const room_id = data.room_id
+        const room_id = data.room_id;
 
-        window.location.href = `/room.html?token=${encodeURIComponent(token)}`;
+        // Redirige a la vista room.html con datos en URL
+        window.location.href = `/room/${encodeURIComponent(room_id)}?token=${encodeURIComponent(token)}`;
 
       } catch (error) {
         alert("Failed to create room: " + error.message);
