@@ -1,0 +1,51 @@
+<!-- room.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>YANIF Room</title>
+</head>
+<body>
+  <h2>Welcome <span id="usernameDisplay"></span>!</h2>
+  <p>You're in room <span id="roomDisplay"></span></p>
+  <p>Players connected: <span id="playerCount">1</span></p>
+
+  <script>
+    // Parsear los parámetros
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    
+
+    document.getElementById("usernameDisplay").textContent = token;
+    document.getElementById("roomDisplay").textContent = token;
+
+    // Conexión WebSocket
+    const socket = new WebSocket(`ws://localhost:8000/ws?token=${token}`);
+
+    socket.onopen = () => {
+      console.log("Connected to room");
+    };
+
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data)
+
+        if(data.type == "player_count"){
+            document.getElementById("playerCount").textContent = data.count;
+        }
+    };
+
+    socket.onclose = (event) => {
+        if (event.code === 4001) {
+            alert("Token expired");
+        } else if (event.code === 4002) {
+            alert("Invalid token");
+        } else if (event.code === 4003) {
+            alert("Unauthorized to access this room");
+        }
+
+        // Redirige a página segura
+        window.location.href = "/";
+        };
+  </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YANIF</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Raleway:wght@400&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Playfair Display', serif;
+      background-color: #f5f5f5;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-size: 64px;
+      margin-bottom: 40px;
+      color: #222;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      min-width: 300px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    input[type="text"] {
+      padding: 12px;
+      width: 100%;
+      max-width: 480px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      background-color: #f5f5f5;
+      font-family: 'Playfair Display', serif;
+
+
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 20px;
+      background-color: #686868;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.5s, transform 0.1s;
+      font-family: 'Playfair Display', serif;
+      color: #ffffff;
+      min-width: 150px;
+    }
+
+    button:hover {
+      background-color: #adadad;
+      transform: scale(1.02);
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.4);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    .modal input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .button-group button {
+      white-space: nowrap;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="title">YANIF</div>
+
+  <div class="container">
+    <input type="text" id="username" placeholder="Enter username" />
+    <div class="button-group">
+      <button id="createBtn" onclick="createRoom()">Create Room</button>
+      <button id="joinBtn" onclick="openJoinModal()">Join Room</button>
+    </div>
+  </div>
+
+  <!-- Modal for Room ID -->
+  <div class="modal" id="joinModal">
+    <div class="modal-content">
+      <h3>Enter Room ID</h3>
+      <input type="text" id="roomIdInput" placeholder="Room ID" />
+      <button onclick="joinRoom()">Join</button>
+    </div>
+  </div>
+
+  <script>
+    async function createRoom() {
+      const username = document.getElementById("username").value.trim();
+      if (!username) {
+        alert("Please enter your username");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:8000/create_room", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username })
+        });
+
+        if (!response.ok) {
+          throw new Error("Error creating room");
+        }
+
+        const data = await response.json();
+        const token = data.token;
+
+        // Redirige a la vista room.html con datos en URL
+        window.location.href = `/room.html?token=${encodeURIComponent(token)}`;
+      } catch (error) {
+        alert("Failed to create room: " + error.message);
+      }
+    }
+
+    function openJoinModal() {
+      const username = document.getElementById("username").value.trim();
+      if (!username) {
+        alert("Please enter your username first");
+        return;
+      }
+      document.getElementById("joinModal").style.display = "flex";
+    }
+
+    async function joinRoom() {
+      const roomId = document.getElementById("roomIdInput").value.trim();
+      const username = document.getElementById("username").value.trim();
+      if (!roomId) {
+        alert("Please enter a room ID");
+        return;
+      }
+      document.getElementById("joinModal").style.display = "none";
+
+      try {
+        const response = await fetch("http://localhost:8000/join_room", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, roomId })
+        });
+
+        if (!response.ok) {
+          throw new Error("Error creating room");
+        }
+
+        const data = await response.json();
+        const token = data.token;
+
+        localStorage.setItem("token", token);
+        window.location.href = `room.html?roomID=${roomId}`;
+      } catch (error) {
+        alert("Failed to create room: " + error.message);
+      }
+      
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById("joinModal");
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    window.onload = function () {
+      const btn1 = document.getElementById("createBtn");
+      const btn2 = document.getElementById("joinBtn");
+      const field = document.getElementById("username");
+
+      // Get the widest button
+      const widthField = field.offsetWidth;
+
+      // Set both buttons to same width
+      btn1.style.width = (widthField/2 - 5) + "px";
+      btn2.style.width = (widthField/2 - 5) + "px";
+    };
+  </script>
+
+</body>
+</html>

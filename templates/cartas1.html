@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YANIF App</title>
+  <!-- Import Google Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #ffffff;
+      color: #fff;
+      font-family: "Playfair Display", serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .title {
+      font-family: "Playfair Display", serif;
+      font-size: 70px;
+      margin-bottom: 30px;
+      color: #000000;
+      letter-spacing: 2px;
+    }
+
+    .container {
+      text-align: center;
+      background-color: #424242;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #fff2;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 80%;
+      max-width: 300px;
+      margin-bottom: 20px;
+      border: 1px solid #fff;
+      background-color: #f0f0f0;
+      color: #000;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: 1px solid #fff;
+      background-color: #f0f0f0;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+      font-family: "Playfair Display", serif;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .button-group button {
+      white-space: nowrap;
+      padding: 10px 20px;
+      font-family: "Playfair Display", serif;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="title">YANIF</div>
+
+  <div class="container">
+    <input type="text" placeholder="Username" id="username" />
+    <br />
+    <div class="button-group">
+      <button id="createBtn" onclick="createRoom()">Create Room</button>
+      <button id="joinBtn" onclick="joinRoom()">Join Room</button>
+    </div>
+  </div>
+
+  <script>
+    function createRoom() {
+      const username = document.getElementById("username").value;
+      alert("Creating room for: " + username);
+    }
+
+    function joinRoom() {
+      const username = document.getElementById("username").value;
+      alert("Joining room as: " + username);
+    }
+
+    window.onload = function () {
+      const btn1 = document.getElementById("createBtn");
+      const btn2 = document.getElementById("joinBtn");
+
+      // Get the widest button
+      const maxWidth = Math.max(btn1.offsetWidth, btn2.offsetWidth);
+
+      // Set both buttons to same width
+      btn1.style.width = maxWidth + "px";
+      btn2.style.width = maxWidth + "px";
+      document.getElementById("username").style.width = (maxWidth*2 + 10) + "px";
+    };
+  </script>
+</body>
+</html>
