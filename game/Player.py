@@ -44,5 +44,4 @@ class Player:
         Function that returns the name of the player
         
         """
-        print(type(self.name))
         return self.name

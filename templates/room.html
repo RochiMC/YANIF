@@ -14,10 +14,10 @@
     // Parsear los parámetros
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
+    const room_id = params.get("room_id")
     
-
     document.getElementById("usernameDisplay").textContent = token;
-    document.getElementById("roomDisplay").textContent = token;
+    document.getElementById("roomDisplay").textContent = room_id;
 
     // Conexión WebSocket
     const socket = new WebSocket(`ws://localhost:8000/ws?token=${token}`);

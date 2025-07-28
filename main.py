@@ -73,7 +73,7 @@ async def create_room(request: Request):
     room = GameRoom(room_id)
     rooms_websockets[room_id] = []
     rooms[room_id] = room
-    print(f"EL room id es {room}")
+    print(f"EL room id es {room_id}")
     return await common_add_player(room_id, username)
 
     
@@ -94,7 +94,6 @@ async def websocket_endpoint(websocket: WebSocket, token: str = Query(...)):
         room_id = payload["room_id"]
 
         # if the room id is not created, or the username was not previously added
-        print(rooms[room_id].check_player(username))
         if room_id not in rooms.keys() or not rooms[room_id].check_player(username):
             return 
 
@@ -108,14 +107,14 @@ async def websocket_endpoint(websocket: WebSocket, token: str = Query(...)):
             data = await websocket.receive_text()
             print(f"[{username} @ {room_id}] sent: {data}")
             
-            actualise_number_players(room_id)
+            await actualise_number_players(room_id)
 
     except jwt.ExpiredSignatureError:
         await websocket.close(code=4001)
     except jwt.InvalidTokenError:
         await websocket.close(code=4002)
     except WebSocketDisconnect:
-        actualise_number_players(room_id)
+        await actualise_number_players(room_id)
     finally:
         try:
             rooms_websockets[room_id].remove(websocket)

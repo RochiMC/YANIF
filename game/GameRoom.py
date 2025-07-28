@@ -43,7 +43,6 @@ class GameRoom:
         """
         
         for p in self.players:
-            print(p.get_name())
             if p.get_name() == username:
                 return True
         
